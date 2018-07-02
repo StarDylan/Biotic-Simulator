@@ -11,11 +11,11 @@ public class Board extends JPanel {
 	
 
 	
-	static public int[] getDimentions() {
-		int[] Dimentions = new int[3];
-		Dimentions[0] = DimentionX;
-		Dimentions[0] = DimentionY;
-		return Dimentions;
+	static public int getDimentionX() {
+		return DimentionX;
+	}
+	static public int getDimentionY() {
+		return DimentionY;
 	}
 
 

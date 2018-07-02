@@ -48,4 +48,20 @@ public class JsonImport {
 		
 		return JObj;		
 	}
+	public static JSONObject getJsonObjectFromRaw(String raw_data) {
+		
+	
+		JSONParser JParser = new JSONParser();
+		
+		JSONObject JObj = new JSONObject();
+		
+		try {
+			JObj = (JSONObject) JParser.parse(raw_data);
+		} catch (ParseException e) {
+			System.out.println("JSON Parse Failed");
+			return null;
+		}
+		
+		return JObj;		
+	}
 }
