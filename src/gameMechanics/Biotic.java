@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import gameBoard.Board;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.simple.*;
@@ -16,13 +17,17 @@ public class Biotic {
 	
 	public UUID BioticUUID;
 	
+	private double Information = 0;
+	
 	static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
 	
-	private int[] currentCords;
+	private int[] CurrentCords;
 
-	private JSONObject[] program;
+	private JSONObject[] Program;
 	
 	private actions NextAction;
+	
+	private ArrayList<Biotic> Network;
 	
 	enum actions{
 		DELETE,
@@ -37,36 +42,35 @@ public class Biotic {
 
 	
 
-	 Biotic(String Owner_UUID, JSONObject[] program,int locX, int locY){
+	 Biotic(String Owner_UUID, JSONObject[] Program,int locX, int locY){
 		
 		this.Owner_UUID = UUID.fromString(Owner_UUID);
 		
-		this.program = program;
-		
-		BioticUUID = UUID.randomUUID();
+		this.Program = Program;
 		
 		grid[locX][locY] = this;
 		
-		int[] currentCords = {locX,locY};
+		int[] CurrentCords = {locX,locY};
 		
-		BIOTICS_INGAME.put(this,currentCords);
+		BIOTICS_INGAME.put(this,CurrentCords);
+		
+		BioticUUID = UUID.randomUUID();
 	}
 	 
-	 Biotic(String Owner_UUID, JSONObject[] program,int locX, int locY,UUID BioticUUID){
+	 //Biotic Constructor with Specified Biotic UUID
+	 Biotic(String Owner_UUID, JSONObject[] Program,int locX, int locY, UUID BioticUUID){
 			
 		this.Owner_UUID = UUID.fromString(Owner_UUID);
 		
-		BioticUUID = this.BioticUUID;
-		
-		this.program = program;
-		
-		BioticUUID = UUID.randomUUID();
+		this.Program = Program;
 		
 		grid[locX][locY] = this;
 		
-		int[] cords = {locX,locY};
+		int[] CurrentCords = {locX,locY};
 		
-		BIOTICS_INGAME.put(this,cords);
+		BIOTICS_INGAME.put(this,CurrentCords);
+		
+		this.BioticUUID = BioticUUID;
 	}
 	 
 	//Getters And Setters
@@ -78,13 +82,16 @@ public class Biotic {
 	}
 
 	public int[] getCurrentCords() {
-		return currentCords;
+		return CurrentCords;
 	}
 	static public int getNum_BIOTICS_INGAME() {
 		return BIOTICS_INGAME.size();
 	}
 	static public Biotic[][] getGrid(){
 		return grid;
+	}
+	public double getInformation() {
+		return this.Information;
 	}
 
 	
@@ -99,8 +106,8 @@ public class Biotic {
 		 * {"WHEN":["DETECT_RED","DETECT BLUE"],"THAN":["EAT"]},"IF":["DETECT BLUE"],"THAN":["RUN_AWAY"]}
 		 */
 		
-		for(int a = 0; a < this.program.length; a++) {
-			JSONObject json = this.program[a];
+		for(int a = 0; a < this.Program.length; a++) {
+			JSONObject json = this.Program[a];
 			
 			//Get the WHEN Commands
 			JSONArray WhenArray = (JSONArray) json.get("WHEN");
@@ -119,7 +126,7 @@ public class Biotic {
 				//Comparing Current State to Programmed State
 				if(IfConditions.equals(NearBy)) {
 					
-					//If True, Set Next Action to programmed action 
+					//If True, Set Next Action to Programmed action 
 					switch((String)ThanArray.get(z)) {
 					case "DELETE":
 						this.NextAction = actions.DELETE;
@@ -145,23 +152,7 @@ public class Biotic {
 		}
 	}
 		
-		//Detecting Functions
-		public String detectAll() {
-			return null;
-			
-			//	Near/NextTo Young
-		 
-			//	Near/NextTo Old
-			
-			//	Near/NextTo Network
-			
-			//	Near/NextTo Past Creation
-			
-			//	Near/NextTo Stranger
-			
-			//	Near/NextTo Replicate
 		
-		}
 		
 	
 	
