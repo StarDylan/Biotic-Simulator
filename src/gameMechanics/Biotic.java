@@ -1,5 +1,7 @@
 package gameMechanics;
 
+import java.util.UUID;
+
 import gameMechanics.JsonImport;
 import gameBoard.Board;
 
@@ -13,30 +15,62 @@ import java.util.Arrays;
 
 public class Biotic {
 	
-	private static HashMap<Biotic,Integer[]> BIOTICS_INGAME = new HashMap<Biotic,Integer[]>();
+	private static HashMap<Biotic,int[]> BIOTICS_INGAME = new HashMap<Biotic,int[]>();
 	
-	private final String Owner_UUID;
+	private final UUID Owner_UUID;
 	
-	private static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
+	public final UUID BioticUUID;
 	
-	private Integer[] currentCords = new Integer[2];
+	static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
+	
+	private int[] currentCords;
 
 	private JSONObject[] program;
 	
 	private actions NextAction;
 	
 	enum actions{
-		ATTACK,
-		RUN_AWAY
+		DELETE,
+		RUN_AWAY,
+		REPLICATE,
+		FOLLOW,
+		NETWORK,
+		INFECT,
+		HACK,
+		WANDER
 	}
 
 	
 
 	 Biotic(String Owner_UUID, JSONObject[] program,int locX, int locY){
 		
-		this.Owner_UUID = Owner_UUID;
+		this.Owner_UUID = UUID.fromString(Owner_UUID);
 		
 		this.program = program;
+		
+		BioticUUID = UUID.randomUUID();
+		
+		//Fill Grid with null values
+		if (BIOTICS_INGAME.size() == 0) {
+			Arrays.fill(grid,null);
+		}
+		
+		grid[locX][locY] = this;
+		
+		int[] currentCords = {locX,locY};
+		
+		BIOTICS_INGAME.put(this,currentCords);
+	}
+	 
+	 Biotic(String Owner_UUID, JSONObject[] program,int locX, int locY,UUID BioticUUID){
+			
+		this.Owner_UUID = Owner_UUID;
+		
+		BioticUUID = this.BioticUUID;
+		
+		this.program = program;
+		
+		BioticUUID = UUID.randomUUID();
 		
 		//Fill Grid with null values
 		if (BIOTICS_INGAME.size() == 0) {
@@ -51,16 +85,18 @@ public class Biotic {
 	}
 	 
 	//Getters And Setters
-	public String getOwner_UUID () {
+	public UUID getOwner_UUID () {
 		return this.Owner_UUID;
-		
 	}
 
-	public Integer[] getCurrentCords() {
+	public int[] getCurrentCords() {
 		return currentCords;
 	}
 	static public int getNum_BIOTICS_INGAME() {
 		return BIOTICS_INGAME.size();
+	}
+	static public Biotic[][] getGrid(){
+		return grid;
 	}
 
 	
@@ -109,6 +145,26 @@ public class Biotic {
 				}
 			}
 		}
+		
+		//Detecting Functions
+		public String detectAll() {
+			
+			switch (typeBiotic) {
+			
+			//	Near/NextTo Young
+			case 
+			//	Near/NextTo Old
+			
+			//	Near/NextTo Network
+			
+			//	Near/NextTo Past Creation
+			
+			//	Near/NextTo Stranger
+			
+			//	Near/NextTo Replicate
+			}
+		}
+		
 	}
 	
 	
@@ -123,5 +179,7 @@ public class Biotic {
 		System.out.println(Biotic.getNum_BIOTICS_INGAME());
 		
 	}
+	
+	public 
 	
 }
