@@ -17,9 +17,9 @@ public class Biotic {
 	
 	private static HashMap<Biotic,int[]> BIOTICS_INGAME = new HashMap<Biotic,int[]>();
 	
-	private final UUID Owner_UUID;
+	private UUID Owner_UUID;
 	
-	public final UUID BioticUUID;
+	public UUID BioticUUID;
 	
 	static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
 	
@@ -50,10 +50,6 @@ public class Biotic {
 		
 		BioticUUID = UUID.randomUUID();
 		
-		//Fill Grid with null values
-		if (BIOTICS_INGAME.size() == 0) {
-			Arrays.fill(grid,null);
-		}
 		
 		grid[locX][locY] = this;
 		
@@ -64,7 +60,7 @@ public class Biotic {
 	 
 	 Biotic(String Owner_UUID, JSONObject[] program,int locX, int locY,UUID BioticUUID){
 			
-		this.Owner_UUID = Owner_UUID;
+		this.Owner_UUID = UUID.fromString(Owner_UUID);
 		
 		BioticUUID = this.BioticUUID;
 		
@@ -72,14 +68,9 @@ public class Biotic {
 		
 		BioticUUID = UUID.randomUUID();
 		
-		//Fill Grid with null values
-		if (BIOTICS_INGAME.size() == 0) {
-			Arrays.fill(grid,null);
-		}
-		
 		grid[locX][locY] = this;
 		
-		Integer[] cords = {locX,locY};
+		int[] cords = {locX,locY};
 		
 		BIOTICS_INGAME.put(this,cords);
 	}
@@ -87,6 +78,9 @@ public class Biotic {
 	//Getters And Setters
 	public UUID getOwner_UUID () {
 		return this.Owner_UUID;
+	}
+	public UUID getBioticUUID() {
+		return this.BioticUUID;
 	}
 
 	public int[] getCurrentCords() {
@@ -149,10 +143,8 @@ public class Biotic {
 		//Detecting Functions
 		public String detectAll() {
 			
-			switch (typeBiotic) {
-			
 			//	Near/NextTo Young
-			case 
+		 
 			//	Near/NextTo Old
 			
 			//	Near/NextTo Network
@@ -162,7 +154,7 @@ public class Biotic {
 			//	Near/NextTo Stranger
 			
 			//	Near/NextTo Replicate
-			}
+		
 		}
 		
 	}
@@ -175,11 +167,12 @@ public class Biotic {
 	public static void main(String[] args) {
 	
 		JSONObject[] json = {new JSONObject()};
-		Biotic cel1 = new Biotic("UUID",json,23,42);
+		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",json,0,0);
+		System.out.print(cel1.getBioticUUID());
 		System.out.println(Biotic.getNum_BIOTICS_INGAME());
 		
 	}
 	
-	public 
+	 
 	
 }
