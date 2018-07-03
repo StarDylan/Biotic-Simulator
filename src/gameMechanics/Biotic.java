@@ -2,16 +2,11 @@ package gameMechanics;
 
 import java.util.UUID;
 
-import gameMechanics.JsonImport;
 import gameBoard.Board;
 
 import java.util.HashMap;
 
 import org.json.simple.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 
 public class Biotic {
 	
@@ -49,7 +44,6 @@ public class Biotic {
 		this.program = program;
 		
 		BioticUUID = UUID.randomUUID();
-		
 		
 		grid[locX][locY] = this;
 		
@@ -108,8 +102,6 @@ public class Biotic {
 		for(int a = 0; a < this.program.length; a++) {
 			JSONObject json = this.program[a];
 			
-			actions NextAction = null;
-			
 			//Get the WHEN Commands
 			JSONArray WhenArray = (JSONArray) json.get("WHEN");
 			String IfConditions = "";
@@ -129,19 +121,33 @@ public class Biotic {
 					
 					//If True, Set Next Action to programmed action 
 					switch((String)ThanArray.get(z)) {
-					case "ATTACK":
-						NextAction = actions.ATTACK;
+					case "DELETE":
+						this.NextAction = actions.DELETE;
 					case "RUN_AWAY":
-						NextAction = actions.RUN_AWAY;
+						this.NextAction = actions.RUN_AWAY;
+					case "REPLICATE":
+						this.NextAction = actions.REPLICATE;
+					case "NETWORK":
+						this.NextAction = actions.NETWORK;
+					case "HACK":
+						this.NextAction = actions.HACK;
+					case "INFECT":
+						this.NextAction = actions.INFECT;
+					case "WANDER":
+						this.NextAction = actions.WANDER;
+					case "FOLLOW":
+						this.NextAction = actions.FOLLOW;
 						
 					
 					}	
 				}
 			}
 		}
+	}
 		
 		//Detecting Functions
 		public String detectAll() {
+			return null;
 			
 			//	Near/NextTo Young
 		 
@@ -157,7 +163,7 @@ public class Biotic {
 		
 		}
 		
-	}
+	
 	
 	
 	
