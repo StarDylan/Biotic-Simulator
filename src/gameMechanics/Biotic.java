@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import gameBoard.Board;
 
+import gameMechanics.JsonImport;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -93,9 +95,10 @@ public class Biotic {
 	public double getInformation() {
 		return this.Information;
 	}
+	public ArrayList<Biotic> getNetwork() {
+		return Network;
+	}
 
-	
-	
 	//Call to Update the Biotic
 	public void Update() {
 		
@@ -111,10 +114,10 @@ public class Biotic {
 			
 			//Get the WHEN Commands
 			JSONArray WhenArray = (JSONArray) json.get("WHEN");
-			String IfConditions = "";
+			ArrayList<String> IfConditions = new ArrayList<String>();
 			for (int n = 0; n<WhenArray.size(); n++) {
 				
-				IfConditions = IfConditions + "," + WhenArray.get(n).toString();
+				IfConditions.add((String) WhenArray.get(n));
 			}
 			
 			//Get the THAN Commands
@@ -122,7 +125,7 @@ public class Biotic {
 			
 			for(int z = 0; z<ThanArray.size();z++) {
 				ThanArray.get(z).toString();
-				
+				for(int k = 0; k < IfConditions.size(); k++)
 				//Comparing Current State to Programmed State
 				if(IfConditions.equals(NearBy)) {
 					
@@ -163,10 +166,11 @@ public class Biotic {
 	
 	public static void main(String[] args) {
 	
-		JSONObject[] json = {new JSONObject()};
-		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",json,0,0);
+		JSONObject[] jsonArray = {JsonImport.getJsonObjectFromRaw("{\"WHEN\":[\"DETECT_RED\",\"DETECT BLUE\"],\"THAN\":[\"EAT\"]}")};
+		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,0,0);
 		System.out.print(cel1.getBioticUUID());
 		System.out.println(Biotic.getNum_BIOTICS_INGAME());
+		cel1.Update();
 		
 	}
 	

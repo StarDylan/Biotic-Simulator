@@ -3,12 +3,14 @@ package gameMechanics;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import gameMechanics.JsonImport;
+
 public class SearchAlgorithm {
 	
 	private static int radius = 4;
 	static Biotic selectedBiotic;
 
-	public HashMap<Biotic, Integer> search(int radius, Biotic biotic) {
+	static public HashMap<Biotic, Integer> search(int radius, Biotic biotic) {
 		int[] currentCords = biotic.getCurrentCords();
 		int Xcord = currentCords[0];
 		int Ycord = currentCords[1];
@@ -70,8 +72,10 @@ public class SearchAlgorithm {
 		
 		return BioticsFound;
 	}
+	
 
-	public ArrayList<String> findAttributes(Biotic currentBiotic, Biotic selectedBiotic, int radiusFoundIn) {
+	static public ArrayList<String> findAttributes
+	(Biotic currentBiotic, Biotic selectedBiotic, int radiusFoundIn) {
 		
 		boolean NextTo = false;
 		
@@ -92,14 +96,24 @@ public class SearchAlgorithm {
 				near.add("OLD");
 			}
 		//	Near/NextTo Network
-		
+			if(currentBiotic.getNetwork().contains(selectedBiotic)) {
+				near.add("NETWORKED");
+			}
 		//	Near/NextTo Past Creation
-		
+			if(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) {
+				near.add("PAST_CREATION");
+			}
 		//	Near/NextTo Stranger
-		
+			if (!(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) 
+			&& !(currentBiotic.getNetwork().contains(selectedBiotic))) {
+				
+				near.add("STRANGER");
+			}
 		//	Near/NextTo Replicate
+			if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
+				near.add("REPLICATE");
+			}
 		
-		
-		return null;
+		return near;
 	}
 }
