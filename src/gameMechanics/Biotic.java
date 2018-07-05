@@ -42,41 +42,6 @@ public class Biotic {
 		WANDER
 	}
 	
-	SearchAlgorithm Biotic_func = new SearchAlgorithm();
-	//biotic actions
-	public static void DELETE() {
-		
-		
-		/**I want to get these
-		Biotic_func.Xcord_Attack ;
-		Biotic_func.Xcord;					IMPORTANT, SOS, PLEASE HELP
-		Biotic_func.Ycord_Attack;
-		Biotic_func.Ycord;
-		*/
-		
-		//if Xcord less than Xtarget, +=
-		if(Xcord < Xcord_Attack) {
-			for( Xcord = Xcord; Xcord <= Xcord_Attack; Xcord += 1) {}
-			
-		}
-		//if Xcord more than Xtarget, -=
-		if(Xcord > Xcord_Attack) {
-			for( Xcord = Xcord; Xcord >= Xcord_Attack; Xcord -= 1) {}
-					
-		}
-		//if Ycord less than Ytarget +=
-		if(Ycord < Ycord_Attack) {
-			for( Ycord = Ycord; Ycord <= Ycord_Attack; Ycord += 1) {}
-			
-		}
-		//if Ycord more than Xtarget, -=
-		if(Ycord > Ycord_Attack) {
-			for( Ycord = Ycord; Ycord >= Ycord_Attack; Ycord -= 1) {}
-					
-		}
-		// tell me how to delete the targeted biotic when the target cord it reached, please call
-		
-	}
 	
 
 	 Biotic(String Owner_UUID, JSONObject[] Program,int locX, int locY){
