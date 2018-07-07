@@ -14,11 +14,8 @@ public class SearchAlgorithm {
 		int[] currentCords = biotic.getCurrentCords();
 		int Xcord = currentCords[0];
 		int Ycord = currentCords[1];
-		int Xatk;
-		int Yatk;
 
 		HashMap<Biotic,Integer> BioticsFound = new HashMap<Biotic,Integer>();
-		
 		
 		boolean Found = false;
 		// runs a scan of layers around
@@ -44,7 +41,6 @@ public class SearchAlgorithm {
 				if (selectedBiotic != null) {
 					
 					BioticsFound.put(selectedBiotic,z);
-					AttackCoordinates = z;
 					Found = true;
 					}
 				}
@@ -67,50 +63,9 @@ public class SearchAlgorithm {
 					
 				}
 			}
-			// finds the first scanned biotic in radius
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord-=xOffset][Ycord];
-				if (selectedBiotic != null) {
-					
-					Xcord_Attack = (Integer) Xcord;
-					Ycord_Attack = (Integer) Ycord;
-					
-					break;
-					}
-				}
 			
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord-=yOffset];
-				if (selectedBiotic != null) {
-					
-					Xcord_Attack = (Integer) Xcord;
-					Ycord_Attack = (Integer) Ycord;
-					
-					break;
-					}
-				}
-			
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord+=xOffset][Ycord];
-				if (selectedBiotic != null) {
-					
-					Xcord_Attack = (Integer) Xcord;
-					Ycord_Attack = (Integer) Ycord;
-					
-					break;
-					}
-				}
-			
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord+=yOffset];
-				if (selectedBiotic != null) {
-					
-					Xcord_Attack = (Integer) Xcord;
-					Ycord_Attack = (Integer) Ycord;
-					
-					break;
-					
-				}
+			if (Found) {
+				break;
 			}
 		}
 		
@@ -127,7 +82,6 @@ public class SearchAlgorithm {
 		ArrayList<String> near = new ArrayList<String>();
 		
 		if (radiusFoundIn == 1) {
-			NextTo=true;
 			near.add("NEXT_TO");
 		}
 		else {
