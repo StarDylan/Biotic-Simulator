@@ -19,9 +19,11 @@ public class Biotic {
 	
 	public UUID BioticUUID;
 	
+	private Network_Status Networkable;
+	
 	private double Information = 0;
 	
-	static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
+	private static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
 	
 	private int[] CurrentCords;
 
@@ -30,6 +32,13 @@ public class Biotic {
 	private actions NextAction;
 	
 	private ArrayList<Biotic> Network;
+	
+	private Timer Timer = new Timer();
+	
+	enum Network_Status{
+		ABLE_TO,
+		NOT_TESTED
+	}
 	
 	enum actions{
 		DELETE,
@@ -54,6 +63,8 @@ public class Biotic {
 		
 		int[] CurrentCords = {locX,locY};
 		
+		this.CurrentCords = CurrentCords;
+		
 		BIOTICS_INGAME.put(this,CurrentCords);
 		
 		BioticUUID = UUID.randomUUID();
@@ -69,6 +80,8 @@ public class Biotic {
 		grid[locX][locY] = this;
 		
 		int[] CurrentCords = {locX,locY};
+		
+		this.CurrentCords = CurrentCords;
 		
 		BIOTICS_INGAME.put(this,CurrentCords);
 		
@@ -92,15 +105,47 @@ public class Biotic {
 	static public Biotic[][] getGrid(){
 		return grid;
 	}
+	static public void setGrid(Biotic[][] newGrid) {
+		grid = newGrid;
+	}
 	public double getInformation() {
 		return this.Information;
 	}
 	public ArrayList<Biotic> getNetwork() {
 		return Network;
 	}
+	public JSONObject[] getProgram() {
+		return this.Program;
+	}
+	public void setProgram(JSONObject[] program) {
+		this.Program = program;
+	}
+	public Timer getTimer() {
+		return this.Timer;
+	}
+	public Network_Status getNetworkable(){
+		return this.Networkable;
+	}
+	public void addNetwork(Biotic TargetBiotic) {
+		this.Network.add(TargetBiotic);
+	}
+	public void setNetworkable(Network_Status newNetworkStatus) {
+		this.Networkable = newNetworkStatus;
+	}
+	public void setCurrentCords(int[] cords) {
+		this.CurrentCords = cords;
+	}
+	
+	public void clone(int xcord,int ycord) {
+		
+		new Biotic(this.getOwner_UUID().toString(),this.getProgram(),xcord,ycord, this.getBioticUUID());
+		
+	}
 
 	//Call to Update the Biotic
 	public void Update() {
+		
+		this.Timer.Update();
 		
 		String NearBy = "Insert Nearby String";
 	
@@ -164,9 +209,10 @@ public class Biotic {
 	
 		JSONObject[] jsonArray = {JsonImport.getJsonObjectFromRaw("{\"WHEN\":[\"DETECT_RED\",\"DETECT BLUE\"],\"THAN\":[\"EAT\"]}")};
 		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,0,0);
-		System.out.print(cel1.getBioticUUID());
-		System.out.println(Biotic.getNum_BIOTICS_INGAME());
-		cel1.Update();
+		int[] cords = {0,1};
+		BioticActions.Move(cel1,cords);
+		
+		System.out.println();
 		
 	}
 	
