@@ -3,7 +3,7 @@ package gameMechanics;
 public class Timer {
 	
 	//Minimum Number of Ticks between Replicates
-	private int ReplicateTimer = 140;
+	private int ReplicateTimer = 0;
 	private int NetworkTimer = 140;
 	private int DeleteTimer = 140;
 	

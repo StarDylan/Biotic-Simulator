@@ -3,205 +3,185 @@ package gameMechanics;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import gameBoard.Board;
+
 
 public class SearchAlgorithm {
-	
-	enum Attribute {
-		NEXT_TO,
-		NEAR_BY,
-		YOUNG,
-		OLD,
-		NETWORKED,
-		PAST_CREATION,
-		STRANGER,
-		REPLICATE
-		
-	}
-	
+
 
 	//Searches around biotic in radius
 	static public HashMap<Biotic, Integer> search(int radius, Biotic biotic) {
 
-		Biotic selectedBiotic;
-		
 		int[] currentCords = biotic.getCurrentCords();
-		int Xcord = currentCords[0];
-		int Ycord = currentCords[1];
+		int Xoriginal = currentCords[0];
+		int Yoriginal = currentCords[1];
 
-		HashMap<Biotic,Integer> BioticsFound = new HashMap<Biotic,Integer>();
-		
+		HashMap<Biotic,Integer> SpacesFound = new HashMap<Biotic,Integer>();
+
 		boolean Found = false;
 		// runs a scan of layers around
 		//biotic (z) until the height of the layers is equal to the radius
 		for (int z=1; z<=radius; z++) {
-			
-			//starting point
-			Xcord += z;
-			Ycord += z;
-			
-			
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord-=xOffset][Ycord];
-				if (selectedBiotic != null) {
-					
-					BioticsFound.put(selectedBiotic,z);
-					Found = true;
+
+
+
+
+			int[] signs = {-1,1};
+			for (int sign: signs ) {
+				//starting point
+				int Xcord = Xoriginal + (z * -sign);
+				int Ycord = Yoriginal + (z * -sign);
+
+				for(int xOffset = 0; xOffset <= z*2; xOffset++) {
+
+					if (Xcord-xOffset >= 0 && Xcord+(xOffset*sign) < Board.getDimentionX() &&
+							Ycord >= 0 && Ycord < Board.getDimentionY()) {
+
+						if (Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord] != null) {
+							
+							SpacesFound.put(Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord],z);
+							Found = true;
+						}
 					}
 				}
-			
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord-=yOffset];
-				if (selectedBiotic != null) {
-					
-					BioticsFound.put(selectedBiotic,z);
-					Found = true;
+				//starting point
+				Xcord = Xoriginal + (z * sign);
+				Ycord = Yoriginal + (z * -sign);
+
+				for(int yOffset = 1; yOffset <= (z*2)-1; yOffset++) {
+
+					if (Xcord >= 0 && Xcord < Board.getDimentionX() &&
+							Ycord+(yOffset*sign) >= 0 && Ycord+(yOffset*sign) < Board.getDimentionY()) {
+
+						if (Biotic.getGrid()[Xcord ][Ycord+ (yOffset * sign)] != null) {
+
+							SpacesFound.put(Biotic.getGrid()[Xcord][Ycord + (yOffset * sign)],z);
+							Found = true;
+						}
 					}
-				}
-			
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord+=xOffset][Ycord];
-				if (selectedBiotic != null) {
-					
-					BioticsFound.put(selectedBiotic,z);
-					Found = true;
-					}
-				}
-			
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord+=yOffset];
-				if (selectedBiotic != null) {
-					
-					BioticsFound.put(selectedBiotic,z);
-					Found = true;
-					
 				}
 			}
-			
+
 			if (Found) {
 				break;
 			}
+
 		}
-		
+
+		return SpacesFound;
 		//Returns a HashMap
 		//{BIOTIC_OBJECT : RADIUS_WHERE_OBJ_WAS_FOUND}
-		return BioticsFound;
+
 	}
-	
-	static public ArrayList <Integer[]> searchForEmpty(int radius, Biotic biotic) {
 
-		Biotic selectedBiotic;
-		
+	static public ArrayList <int[]> searchForEmpty(int radius, Biotic biotic) {
+
+
 		int[] currentCords = biotic.getCurrentCords();
-		int Xcord = currentCords[0];
-		int Ycord = currentCords[1];
+		int Xoriginal = currentCords[0];
+		int Yoriginal = currentCords[1];
 
-		ArrayList<Integer[]> SpacesFound = new ArrayList<Integer[]>();
+		ArrayList<int[]> SpacesFound = new ArrayList<int[]>();
 
 		boolean Found = false;
 		// runs a scan of layers around
 		//biotic (z) until the height of the layers is equal to the radius
 		for (int z=1; z<=radius; z++) {
 
-			//starting point
-			Xcord += z;
-			Ycord += z;
 
 
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord-xOffset][Ycord];
-				if (selectedBiotic == null) {
 
-					Integer[] cord = {Xcord - xOffset,Ycord};
+			int[] signs = {-1,1};
+			for (int sign: signs ) {
+				//starting point
+				int Xcord = Xoriginal + (z * -sign);
+				int Ycord = Yoriginal + (z * -sign);
 
-					SpacesFound.add(cord);
-					Found = true;
+				for(int xOffset = 0; xOffset <= z*2; xOffset++) {
+
+					if (Xcord-xOffset >= 0 && Xcord+(xOffset*sign) <= Board.getDimentionX() &&
+							Ycord >= 0 && Ycord < Board.getDimentionY()) {
+
+						System.out.println("Found");
+						if (Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord] == null) {
+
+							int[] cord = {Xcord + (xOffset*sign),Ycord};
+
+							SpacesFound.add(cord);
+							Found = true;
+						}
+					}
 				}
-			}
+				//starting point
+				Xcord = Xoriginal + (z * sign);
+				Ycord = Yoriginal + (z * -sign);
 
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord-yOffset];
-				if (selectedBiotic != null) {
+				for(int yOffset = 1; yOffset <= (z*2)-1; yOffset++) {
 
-					Integer[] cord = {Xcord,Ycord-yOffset};
+					if (Xcord >= 0 && Xcord <= Board.getDimentionX() &&
+							Ycord+(yOffset*sign) >= 0 && Ycord+(yOffset*sign) < Board.getDimentionY()) {
 
-					SpacesFound.add(cord);
-					Found = true;
-				}
-			}
+						if (Biotic.getGrid()[Xcord ][Ycord+ (yOffset * sign)] == null) {
 
-			for (int xOffset=1; xOffset<= z*2; xOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord+xOffset][Ycord];
-				if (selectedBiotic != null) {
+							int[] cord = {Xcord, Ycord+ (yOffset*sign)};
 
-					Integer[] cord = {Xcord + xOffset,Ycord};
-
-					SpacesFound.add(cord);
-					Found = true;
-				}
-			}
-
-			for (int yOffset=1; yOffset<= z*2; yOffset++) {
-				selectedBiotic = Biotic.getGrid()[Xcord][Ycord+yOffset];
-				if (selectedBiotic != null) {
-
-					Integer[] cord = {Xcord,Ycord + yOffset};
-
-					SpacesFound.add(cord);
-					Found = true;
-
+							SpacesFound.add(cord);
+							Found = true;
+						}
+					}
 				}
 			}
 
 			if (Found) {
 				break;
 			}
+
 		}
-		
 		//Returns a ArrayList of Arrays, with cords of empty spaces.
 		//{BIOTIC_OBJECT : RADIUS_WHERE_OBJ_WAS_FOUND}
 		return SpacesFound;
 	}
-	
-	
 
-	static public ArrayList<Attribute> findAttributes
+
+
+	static public ArrayList<String> findAttributes
 	(Biotic currentBiotic, Biotic selectedBiotic, int radiusFoundIn) {
-		
-		ArrayList<Attribute> near = new ArrayList<Attribute>();
-		
+
+		ArrayList<String> near = new ArrayList<String>();
+
 		if (radiusFoundIn == 1) {
-			near.add(Attribute.NEXT_TO);
+			near.add("NEXT_TO");
 		}
 		else {
-			near.add(Attribute.NEAR_BY);
+			near.add("NEAR_BY");
 		}
 		//	Near/NextTo Young 
-			if (selectedBiotic.getInformation() <= currentBiotic.getInformation()) {
-				near.add(Attribute.YOUNG);
-			}
+		if (selectedBiotic.getInformation() <= currentBiotic.getInformation()) {
+			near.add("YOUNG");
+		}
 		//	Near/NextTo Old
-			else {
-				near.add(Attribute.OLD);
-			}
+		else {
+			near.add("OLD");
+		}
 		//	Near/NextTo Network
-			if(currentBiotic.getNetwork().contains(selectedBiotic)) {
-				near.add(Attribute.NETWORKED);
-			}
+		if(currentBiotic.getNetwork().contains(selectedBiotic)) {
+			near.add("NETWORKED");
+		}
 		//	Near/NextTo Past Creation
-			if(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) {
-				near.add(Attribute.PAST_CREATION);
-			}
+		if(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) {
+			near.add("PAST_CREATION");
+		}
 		//	Near/NextTo Stranger
-			if (!(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) 
-			&& !(currentBiotic.getNetwork().contains(selectedBiotic))) {
-				
-				near.add(Attribute.STRANGER);
-			}
+		if (!(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) 
+				&& !(currentBiotic.getNetwork().contains(selectedBiotic))) {
+
+			near.add("STRANGER");
+		}
 		//	Near/NextTo Replicate
-			if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
-				near.add(Attribute.REPLICATE);
-			}
-		
+		if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
+			near.add("REPLICATE");
+		}
+
 		return near;
 	}
 }
