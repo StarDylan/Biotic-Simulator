@@ -6,15 +6,20 @@ import gameBoard.Board;
 
 import gameMechanics.JsonImport;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
+
+import gameMechanics.BioticActions;
 
 import org.json.simple.*;
 
 public class Biotic {
 
-	private static HashMap<Biotic,int[]> BIOTICS_INGAME = new HashMap<Biotic,int[]>();
+	private static ArrayList<Biotic> BIOTICS_INGAME = new ArrayList<Biotic>();
 
 	private UUID Owner_UUID;
 
@@ -24,17 +29,19 @@ public class Biotic {
 
 	private double Information = 0;
 
-	private static Biotic[][] grid = new Biotic[Board.getDimentionX()][Board.getDimentionY()];
+	private static Biotic[][] grid = new Biotic[Board.DimentionX/10][Board.DimentionY/10];
 
 	private int[] CurrentCords;
 
-	private JSONObject[] Program;
+	private JSONObject Data;
 
-	private actions NextAction;
-
-	private ArrayList<Biotic> Network;
+	private ArrayList<Biotic> Network = new ArrayList<Biotic>();
 
 	private Timer Timer = new Timer();
+
+	private int InformationDeath = 100000;
+
+	private Color color = Color.BLACK;
 
 	enum Network_Status{
 		ABLE_TO,
@@ -54,11 +61,13 @@ public class Biotic {
 
 
 
-	Biotic(String Owner_UUID, JSONObject[] Program,int locX, int locY){
+	public Biotic(String Owner_UUID, JSONObject Data,int locX, int locY,Color color){
 
 		this.Owner_UUID = UUID.fromString(Owner_UUID);
 
-		this.Program = Program;
+		this.Data = Data;
+
+		this.color = color;
 
 		grid[locX][locY] = this;
 
@@ -66,17 +75,19 @@ public class Biotic {
 
 		this.CurrentCords = CurrentCords;
 
-		BIOTICS_INGAME.put(this,CurrentCords);
+		BIOTICS_INGAME.add(this);
 
 		BioticUUID = UUID.randomUUID();
 	}
 
 	//Biotic Constructor with Specified Biotic UUID
-	Biotic(String Owner_UUID, JSONObject[] Program,int locX, int locY, UUID BioticUUID){
+	public Biotic(String Owner_UUID, JSONObject Data,int locX, int locY, UUID BioticUUID, Color color){
 
 		this.Owner_UUID = UUID.fromString(Owner_UUID);
 
-		this.Program = Program;
+		this.Data = Data;
+
+		this.color = color;
 
 		grid[locX][locY] = this;
 
@@ -84,7 +95,7 @@ public class Biotic {
 
 		this.CurrentCords = CurrentCords;
 
-		BIOTICS_INGAME.put(this,CurrentCords);
+		BIOTICS_INGAME.add(this);
 
 		this.BioticUUID = BioticUUID;
 	}
@@ -100,10 +111,10 @@ public class Biotic {
 	public int[] getCurrentCords() {
 		return CurrentCords;
 	}
-	public static HashMap<Biotic, int[]> getBIOTICS_INGAME() {
+	public static ArrayList<Biotic> getBIOTICS_INGAME() {
 		return Biotic.BIOTICS_INGAME;
 	}
-	public static void setBIOTICS_INGAME(HashMap<Biotic,int[]> newBIOTICS_INGAME) {
+	public static void setBIOTICS_INGAME(ArrayList<Biotic> newBIOTICS_INGAME) {
 		Biotic.BIOTICS_INGAME = newBIOTICS_INGAME;
 	}
 	static public int getNum_BIOTICS_INGAME() {
@@ -121,11 +132,11 @@ public class Biotic {
 	public ArrayList<Biotic> getNetwork() {
 		return Network;
 	}
-	public JSONObject[] getProgram() {
-		return this.Program;
+	public JSONObject getProgram() {
+		return this.Data;
 	}
-	public void setProgram(JSONObject[] program) {
-		this.Program = program;
+	public void setProgram(JSONObject program) {
+		this.Data = program;
 	}
 	public Timer getTimer() {
 		return this.Timer;
@@ -145,33 +156,61 @@ public class Biotic {
 	public void setCurrentCords(int[] cords) {
 		this.CurrentCords = cords;
 	}
+	public void addInformation(int addInfo) {
+		this.Information += addInfo;
+	}
+	public int getInformationDeath() {
+		return this.InformationDeath;
+	}
+	public void addInformationDeath(int add) {
+		this.InformationDeath += add;
+	}
+	public Color getColor() {
+		return this.color;
+	}
+	public void setColor(Color color) {
+		this.color = color;
+	}
 
 	public void delete() {
 		Biotic.getBIOTICS_INGAME().remove(this);
+
 		grid[this.getCurrentCords()[0]][this.getCurrentCords()[1]] = null;
+
 	}
 
-	public void clone(int xcord,int ycord) {
+	public Biotic clone(int xcord,int ycord, Color color) {
 
-		new Biotic(this.getOwner_UUID().toString(),this.getProgram(),xcord,ycord, this.getBioticUUID());
+		return new Biotic(this.getOwner_UUID().toString(),this.getProgram(),xcord,ycord, this.getBioticUUID(),color);
 
 	}
 
 	//Call to Update the Biotic
 	public void Update() {
 
+		if (getInformation() <= this.getInformationDeath()) {
+			this.addInformation(1);
+		}
+		else {
+			this.delete();
+		}
+
+		int SearchRadius = 5;
+
 		this.Timer.Update();
-		
+
+		Biotic targetBiotic = null;
+
 		ArrayList<String> NearBy;
-		
-		HashMap<Biotic,Integer> FoundBiotics = SearchAlgorithm.search(20, this);
-		
+
+		HashMap<Biotic,Integer> FoundBiotics = SearchAlgorithm.search(SearchRadius, this);
+
 		Iterator<Biotic> FoundBioticsIterator = FoundBiotics.keySet().iterator();
 		if(FoundBioticsIterator.hasNext()) {
-			Biotic FoundBiotic = FoundBioticsIterator.next();
-			
+			targetBiotic = FoundBioticsIterator.next();
+
 			NearBy = 
-					SearchAlgorithm.findAttributes(this, FoundBiotic, FoundBiotics.get(FoundBiotic));
+					SearchAlgorithm.findAttributes(this, targetBiotic, FoundBiotics.get(targetBiotic));
 		}
 		else {
 			NearBy = new ArrayList<String>();
@@ -182,51 +221,81 @@ public class Biotic {
 		 * {"WHEN":["DETECT_RED","DETECT BLUE"],"THAN":["EAT"]},"IF":["DETECT BLUE"],"THAN":["RUN_AWAY"]}
 		 */
 
-		for(int a = 0; a < this.Program.length; a++) {
-			JSONObject json = this.Program[a];
 
-			//Get the WHEN Commands
-			JSONArray WhenArray = (JSONArray) json.get("WHEN");
-			ArrayList<String> IfConditions = new ArrayList<String>();
+		JSONArray ProgramArray = (JSONArray) Data.get("PROGRAM");
+		outerloop:
+			for(int p = 0; p < ProgramArray.size(); p++) {
 
-			//Transfer from JSONArray to ArrayList
-			for (int n = 0; n<WhenArray.size(); n++) {
+				//Convert to JSON Object
+				JSONObject Program = (JSONObject) ProgramArray.get(p);
 
-				IfConditions.add((String) WhenArray.get(n));
-			}
+				//Get the If Commands
+				JSONArray IfArray = (JSONArray) Program.get("IF");
+				ArrayList<String> IfConditions = new ArrayList<String>();
 
-			//Get the THAN Commands
-			JSONArray ThanArray = (JSONArray) json.get("THAN");
+				//Transfer from JSONArray to ArrayList
+				for (int n = 0; n<IfArray.size(); n++) {
 
-			outerloop:
-			for(int z = 0; z<ThanArray.size();z++) {
+					IfConditions.add((String) IfArray.get(n));
+				}
+
+				//Get the THAN Commands
+				JSONArray ThanArray = (JSONArray) Program.get("THAN");
+
+
 				for(int k = 0; k < IfConditions.size(); k++) {
 					//Comparing Current State to Programmed State
 					if(!(NearBy.contains(IfConditions.get(k)))) {
 						break outerloop;
 					}
+				}
+
+				Collections.shuffle(ThanArray);
+
+				for (int k = 0; k<ThanArray.size(); k++) {
+					String Command = (String) ThanArray.get(k);
 					//If True, Set Next Action to Programmed action 
-					switch(ThanArray.get(z).toString()) {
-					case "DELETE":
-						this.NextAction = actions.DELETE;
-					case "RUN_AWAY":
-						this.NextAction = actions.RUN_AWAY;
-					case "REPLICATE":
-						this.NextAction = actions.REPLICATE;
-					case "NETWORK":
-						this.NextAction = actions.NETWORK;
-					case "HACK":
-						this.NextAction = actions.HACK;
-					case "INFECT":
-						this.NextAction = actions.INFECT;
-					case "WANDER":
-						this.NextAction = actions.WANDER;
-					case "FOLLOW":
-						this.NextAction = actions.FOLLOW;
+					boolean CommandOutput = false;
+					//Requries Close Proximety Commands
+					if (NearBy.contains("NEXT_TO")) {
+						switch(Command) {
+						case "DELETE":
+							CommandOutput = BioticActions.Delete(this, targetBiotic);
+							break;
+						case "NETWORK":
+							CommandOutput = BioticActions.Network(this, targetBiotic);
+							break;
+						case "HACK":
+							CommandOutput = BioticActions.Hack(this, targetBiotic);
+							break;
+						case "INFECT":
+							CommandOutput = BioticActions.Infect(this, targetBiotic);
+							break;
+						}
 					}
+					switch(Command) {
+
+					case "RUN_AWAY":
+						CommandOutput = BioticActions.RunAway(this);
+						break;
+					case "REPLICATE":
+						CommandOutput = BioticActions.Replicate(this);
+						break;
+					case "WANDER":
+						CommandOutput = BioticActions.Wander(this);
+						break;
+					case "FOLLOW":
+						CommandOutput = BioticActions.Follow(this);
+						break;
+					}
+					if (CommandOutput == true) {
+						break outerloop;
+					}
+
 				}
 			}
-		}
+		//If Nothing works, Wander
+		BioticActions.Wander(this);
 	}
 
 
@@ -234,14 +303,10 @@ public class Biotic {
 
 
 
+
+
+
 	public static void main(String[] args) {
-
-		JSONObject[] jsonArray = {JsonImport.getJsonObjectFromRaw("{\"WHEN\":[\"DETECT_RED\",\"DETECT BLUE\"],\"THAN\":[\"EAT\"]}")};
-		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,0,0);
-		int[] cords = {0,1};
-		BioticActions.Replicate(cel1);
-
-		System.out.println();
 
 	}
 

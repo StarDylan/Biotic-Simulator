@@ -2,6 +2,7 @@ package gameMechanics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import gameBoard.Board;
@@ -10,46 +11,50 @@ import gameMechanics.SearchAlgorithm;
 
 public class BioticActions {
 
-	public static void Move (Biotic targetBiotic, int[] newCords) {
+	public static boolean Move (Biotic targetBiotic, int[] newCords) {
 
 		int xCord = targetBiotic.getCurrentCords()[0];
 		int yCord = targetBiotic.getCurrentCords()[1];
 
 		Biotic[][] tempGrid = Biotic.getGrid();
+		if (newCords[0] >= 0 && newCords[0] <= Board.getDimentionX() &&
+				newCords[1] >= 0 && newCords[1] < Board.getDimentionY()) {
+			if ( tempGrid[newCords[0]][newCords[1]] != null) {
 
-		if ( tempGrid[newCords[0]][newCords[1]] != null) {
+				//Target has BIotic already in it
+				return false;
 
-			System.out.println("Invalid Move, Target has Biotic in it");
+			}
+
+			else {
+
+				//Moves Pointer from and to grid and sets the current cords to new Cordinates
+				tempGrid[xCord][yCord] = null;
+
+				tempGrid[newCords[0]][newCords[1]] = targetBiotic;
+
+				Biotic.setGrid(tempGrid);
+
+				targetBiotic.setCurrentCords(newCords);
+				return true;
+			}
 
 		}
 		else {
-
-			//Moves Pointer from and to grid and sets the current cords to new Cordinates
-			tempGrid[xCord][yCord] = null;
-
-			tempGrid[newCords[0]][newCords[1]] = targetBiotic;
-
-			Biotic.setGrid(tempGrid);
-
-			targetBiotic.setCurrentCords(newCords);
+			return false;
 		}
-
 	}
 
-	public static void Replicate (Biotic targetBiotic) {
+	public static boolean Replicate (Biotic targetBiotic) {
 
-		int radius_of_placement = 2;
+		int radius_of_placement = 1;
 
 		//Check if Timer is at 0
 		if(targetBiotic.getTimer().getReplicateTimer() == 0) {
 			ArrayList<int[]> availableSpaces = 
 					SearchAlgorithm.searchForEmpty(radius_of_placement, targetBiotic);
-
-			System.out.println(availableSpaces.size());
 			//Chooses a Random Space
 			for (int index = 0; index < availableSpaces.size(); index++) {
-
-				System.out.println("Index:  " + index);
 
 				int xCord = availableSpaces.get(index)[0];
 				int yCord = availableSpaces.get(index)[1];
@@ -57,60 +62,37 @@ public class BioticActions {
 				if (xCord >= 0 && xCord <= Board.getDimentionX()
 						&& yCord >=0 && yCord <=Board.getDimentionY()) {
 					if (Biotic.getGrid()[xCord][yCord] == null) {
-
-						System.out.println("Cloned at " + xCord + ","+yCord);
-
-						targetBiotic.clone(xCord, yCord);
-
-						break;
+						targetBiotic.addInformationDeath(500); 
+						targetBiotic.clone(xCord, yCord,targetBiotic.getColor());
+						//.getTimer().addReplicateTimer(targetBiotic.getTimer().getResetValueReplicateTimer());
+						targetBiotic.getTimer().addReplicateTimer(targetBiotic.getTimer().getResetValueReplicateTimer()*9999999);
+						return true;
 
 					}
 				}
 			}
+			return false;
+		}
+		else {
+			return false;
 		}
 	}
 
-	public static void Network (Biotic currentBiotic, Biotic targetBiotic) {
+	public static boolean Network (Biotic currentBiotic, Biotic targetBiotic) {
 
-		if (targetBiotic.getNetwork().contains(currentBiotic) && 
-				currentBiotic.getNetwork().contains(targetBiotic)) {
+		if (currentBiotic.getNetwork().contains(targetBiotic)) {
 			//Already Networked
+			return false;
 		}
 		else {
 
-			//Step 2
-			//Tests if target can network
-			//If so, set self as Networkable and Update Target
-			if (targetBiotic.getNetworkable().equals(Network_Status.ABLE_TO)){
-				currentBiotic.addNetwork(targetBiotic);
-				currentBiotic.setNetworkable(Network_Status.ABLE_TO);
-				targetBiotic.Update();
-			}
-			//Step 3 - Finsihed
-			//Tests if you were prev identified as Networkable
-			else if (currentBiotic.getNetworkable().equals(Network_Status.ABLE_TO)){
+			currentBiotic.addNetwork(targetBiotic);
+			return true;
 
-				//If so add target as networked
-				currentBiotic.addNetwork(targetBiotic);
-
-				//Reset yourself and other for next Network Attempt
-				currentBiotic.setNetworkable(Network_Status.NOT_TESTED);
-				targetBiotic.setNetworkable(Network_Status.NOT_TESTED);
-			}
-
-			//Step 1
-			//If other is not networkable and self is not networkable,
-			else {
-				//Update other biotic and set self as networkable
-
-				currentBiotic.setNetworkable(Network_Status.ABLE_TO);
-				targetBiotic.Update();
-			}
 		}
-
 	}
 
-	public static void RunAway (Biotic currentBiotic) {
+	public static boolean RunAway (Biotic currentBiotic) {
 
 		//
 		int detectRadius = 20;
@@ -167,23 +149,35 @@ public class BioticActions {
 		}
 
 		//Move Randomly if selected spot is filled
-		if (Biotic.getGrid()[newCords[0]][newCords[1]] != null) {
-			ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
-			if (emptySpaces.size() != 0) {
-				//Chooses a Random Space
-				int index = ((int) (Math.random() * ((emptySpaces.size()) + 1)));
+		if (newCords[0] >= 0 && newCords[0] < Board.getDimentionX() &&
+				newCords[1] >= 0 && newCords[1] < Board.getDimentionY()) {
+			if (Biotic.getGrid()[newCords[0]][newCords[1]] != null) {
+				ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
+				if (emptySpaces.size() != 0) {
+					//Chooses a Random Space
+					Random rand = new Random();
+					int index = rand.nextInt(emptySpaces.size());
 
-				newCords[0] = emptySpaces.get(index)[0];
-				newCords[1] = emptySpaces.get(index)[1];
+					newCords[0] = emptySpaces.get(index)[0];
+					newCords[1] = emptySpaces.get(index)[1];
+
+				}
 			}
 		}
 
-		BioticActions.Move(currentBiotic, newCords);
+
+		if(BioticActions.Move(currentBiotic, newCords)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	public static void Follow(Biotic currentBiotic) {
+	public static boolean Follow(Biotic currentBiotic) {
 
-		int detectRadius = 20;
+		int detectRadius = 10;
+
 
 		//Gets HashMap of nearest Biotics
 		HashMap<Biotic, Integer> Found = SearchAlgorithm.search(detectRadius, currentBiotic);
@@ -239,50 +233,84 @@ public class BioticActions {
 
 
 		//Move Randomly if selected spot is filled
-		if (Biotic.getGrid()[newCords[0]][newCords[1]] != null) {
-			ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
-			if (emptySpaces.size() != 0) {
-				//Chooses a Random Space
-				int index = ((int) (Math.random() * ((emptySpaces.size()) + 1)));
+		if (newCords[0] >= 0 && newCords[0] <= Board.getDimentionX() &&
+				newCords[1] >= 0 && newCords[1] < Board.getDimentionY()) {
+			if (Biotic.getGrid()[newCords[0]][newCords[1]] != null) {
+				ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
+				if (emptySpaces.size() != 0) {
+					//Chooses a Random Space
+					Random rand = new Random();
+					int index = rand.nextInt(emptySpaces.size());
 
-				newCords[0] = emptySpaces.get(index)[0];
-				newCords[1] = emptySpaces.get(index)[1];
+					newCords[0] = emptySpaces.get(index)[0];
+					newCords[1] = emptySpaces.get(index)[1];
+				}
 			}
 		}
 
-		BioticActions.Move(currentBiotic, newCords);
+		if(BioticActions.Move(currentBiotic, newCords)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	public static void Hack(Biotic currentBiotic, Biotic targetBiotic) {
-		targetBiotic.setProgram(currentBiotic.getProgram());
+	public static boolean Hack(Biotic currentBiotic, Biotic targetBiotic) {
+		if (Biotic.getBIOTICS_INGAME().contains(targetBiotic)) {
+			
+			targetBiotic.setProgram(currentBiotic.getProgram());
+			targetBiotic.setColor(currentBiotic.getColor());
 
-		currentBiotic.delete();	
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	public static void Infect(Biotic currentBiotic, Biotic targetBiotic) {
+	public static boolean Infect(Biotic currentBiotic, Biotic targetBiotic) {
 		ArrayList<Biotic> empty = new ArrayList<Biotic>();
 		targetBiotic.setNetwork(empty);
 
 		currentBiotic.delete();
+		return true;
 	}
 
-	public static void Wander(Biotic currentBiotic) {
+	public static boolean Wander(Biotic currentBiotic) {
 
 		int[] newCords = 
 			{currentBiotic.getCurrentCords()[0],
 					currentBiotic.getCurrentCords()[1]};
 
-		ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
-		if (emptySpaces.size() != 0) {
-			//Chooses a Random Space
-			int index = ((int) (Math.random() * ((emptySpaces.size()) + 1)));
-
-			newCords[0] = emptySpaces.get(index)[0];
-			newCords[1] = emptySpaces.get(index)[1];
-
+		//Move Randomly if selected spot is filled
+		if (Biotic.getGrid()[newCords[0]][newCords[1]] != null) {
+			ArrayList<int[]> emptySpaces = SearchAlgorithm.searchForEmpty(1, currentBiotic);
+			if (emptySpaces.size() != 0) {
+				//Chooses a Random Space
+				Random rand = new Random();
+				int index = rand.nextInt(emptySpaces.size());
+				newCords[0] = emptySpaces.get(index)[0];
+				newCords[1] = emptySpaces.get(index)[1];
+			}
 		}
 
-		Move(currentBiotic,newCords);
+		if(Move(currentBiotic,newCords)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean Delete(Biotic currentBiotic,Biotic targetBiotic) {
+		if(currentBiotic.getTimer().getDeleteTimer() == 0) {
+			targetBiotic.delete();
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 

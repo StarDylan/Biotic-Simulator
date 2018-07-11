@@ -38,7 +38,7 @@ public class SearchAlgorithm {
 							Ycord >= 0 && Ycord < Board.getDimentionY()) {
 
 						if (Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord] != null) {
-							
+
 							SpacesFound.put(Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord],z);
 							Found = true;
 						}
@@ -97,12 +97,11 @@ public class SearchAlgorithm {
 				int Xcord = Xoriginal + (z * -sign);
 				int Ycord = Yoriginal + (z * -sign);
 
-				for(int xOffset = 0; xOffset <= z*2; xOffset++) {
-
-					if (Xcord-xOffset >= 0 && Xcord+(xOffset*sign) <= Board.getDimentionX() &&
+				int xOffset = 0;
+				for(xOffset = 0; xOffset <= z*2; xOffset++) {
+					if (Xcord+(xOffset*sign) >= 0 && Xcord+(xOffset*sign) < Board.getDimentionX() &&
 							Ycord >= 0 && Ycord < Board.getDimentionY()) {
 
-						System.out.println("Found");
 						if (Biotic.getGrid()[Xcord + (xOffset * sign)][Ycord] == null) {
 
 							int[] cord = {Xcord + (xOffset*sign),Ycord};
@@ -116,7 +115,9 @@ public class SearchAlgorithm {
 				Xcord = Xoriginal + (z * sign);
 				Ycord = Yoriginal + (z * -sign);
 
-				for(int yOffset = 1; yOffset <= (z*2)-1; yOffset++) {
+				int yOffset = 0;
+
+				for(yOffset = 1; yOffset <= (z*2)-1; yOffset++) {
 
 					if (Xcord >= 0 && Xcord <= Board.getDimentionX() &&
 							Ycord+(yOffset*sign) >= 0 && Ycord+(yOffset*sign) < Board.getDimentionY()) {
@@ -149,7 +150,7 @@ public class SearchAlgorithm {
 
 		ArrayList<String> near = new ArrayList<String>();
 
-		if (radiusFoundIn == 1) {
+		if (radiusFoundIn <= 2) {
 			near.add("NEXT_TO");
 		}
 		else {
@@ -173,15 +174,15 @@ public class SearchAlgorithm {
 		}
 		//	Near/NextTo Stranger
 		if (!(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) 
-				&& !(currentBiotic.getNetwork().contains(selectedBiotic))) {
-
+				&& !(currentBiotic.getNetwork().contains(selectedBiotic)
+						&& selectedBiotic.getNetwork().contains(currentBiotic))) {
 			near.add("STRANGER");
 		}
 		//	Near/NextTo Replicate
 		if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
 			near.add("REPLICATE");
 		}
-
 		return near;
+
 	}
 }
