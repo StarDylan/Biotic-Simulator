@@ -37,11 +37,12 @@ public class Biotic {
 
 	private ArrayList<Biotic> Network = new ArrayList<Biotic>();
 
-	private Timer Timer = new Timer();
+	private Timer Timer = new Timer(this);
 
 	private int InformationDeath = 100000;
 
 	private Color color = Color.BLACK;
+
 
 	enum Network_Status{
 		ABLE_TO,
@@ -68,6 +69,7 @@ public class Biotic {
 		this.Data = Data;
 
 		this.color = color;
+
 
 		grid[locX][locY] = this;
 
@@ -165,17 +167,28 @@ public class Biotic {
 	public void addInformationDeath(int add) {
 		this.InformationDeath += add;
 	}
+
 	public Color getColor() {
 		return this.color;
 	}
-	public void setColor(Color color) {
+	public void setColor(Color color){
 		this.color = color;
 	}
 
+
 	public void delete() {
 		Biotic.getBIOTICS_INGAME().remove(this);
+		
+		//Remove All Network Pointers
+		for (int x = 0; x < this.getNetwork().size();x++) {
+			this.getNetwork().get(x).getNetwork().remove(this); 
+		}
+		
+		this.getNetwork().clear();
 
 		grid[this.getCurrentCords()[0]][this.getCurrentCords()[1]] = null;
+		
+		Board.deleteList.add(this);
 
 	}
 
@@ -225,77 +238,83 @@ public class Biotic {
 		JSONArray ProgramArray = (JSONArray) Data.get("PROGRAM");
 		outerloop:
 			for(int p = 0; p < ProgramArray.size(); p++) {
+				nextSection:
+					while(p<ProgramArray.size()) {
+						//Convert to JSON Object
+						JSONObject Program = (JSONObject) ProgramArray.get(p);
 
-				//Convert to JSON Object
-				JSONObject Program = (JSONObject) ProgramArray.get(p);
+						//Get the If Commands
+						JSONArray IfArray = (JSONArray) Program.get("IF");
+						ArrayList<String> IfConditions = new ArrayList<String>();
 
-				//Get the If Commands
-				JSONArray IfArray = (JSONArray) Program.get("IF");
-				ArrayList<String> IfConditions = new ArrayList<String>();
+						//Transfer from JSONArray to ArrayList
+						for (int n = 0; n<IfArray.size(); n++) {
 
-				//Transfer from JSONArray to ArrayList
-				for (int n = 0; n<IfArray.size(); n++) {
+							IfConditions.add((String) IfArray.get(n));
+						}
 
-					IfConditions.add((String) IfArray.get(n));
-				}
-
-				//Get the THAN Commands
-				JSONArray ThanArray = (JSONArray) Program.get("THAN");
+						//Get the THAN Commands
+						JSONArray ThanArray = (JSONArray) Program.get("THAN");
 
 
-				for(int k = 0; k < IfConditions.size(); k++) {
-					//Comparing Current State to Programmed State
-					if(!(NearBy.contains(IfConditions.get(k)))) {
-						break outerloop;
-					}
-				}
+						for(int k = 0; k < IfConditions.size(); k++) {
+							//Comparing Current State to Programmed State
+							if(!(NearBy.contains(IfConditions.get(k)))) {
+								break nextSection;
+							}
+						}
 
-				Collections.shuffle(ThanArray);
+						Collections.shuffle(ThanArray);
 
-				for (int k = 0; k<ThanArray.size(); k++) {
-					String Command = (String) ThanArray.get(k);
-					//If True, Set Next Action to Programmed action 
-					boolean CommandOutput = false;
-					//Requries Close Proximety Commands
-					if (NearBy.contains("NEXT_TO")) {
-						switch(Command) {
-						case "DELETE":
-							CommandOutput = BioticActions.Delete(this, targetBiotic);
-							break;
-						case "NETWORK":
-							CommandOutput = BioticActions.Network(this, targetBiotic);
-							break;
-						case "HACK":
-							CommandOutput = BioticActions.Hack(this, targetBiotic);
-							break;
-						case "INFECT":
-							CommandOutput = BioticActions.Infect(this, targetBiotic);
-							break;
+						for (int k = 0; k<ThanArray.size(); k++) {
+							String Command = (String) ThanArray.get(k);
+							//If True, Set Next Action to Programmed action 
+							boolean CommandOutput = false;
+							//Requries Close Proximety Commands
+							if (NearBy.contains("NEXT_TO")) {
+								switch(Command) {
+								case "DELETE":
+									CommandOutput = BioticActions.Delete(this, targetBiotic);
+									break;
+								case "NETWORK":
+									CommandOutput = BioticActions.Network(this, targetBiotic);
+									break;
+								case "HACK":
+									CommandOutput = BioticActions.Hack(this, targetBiotic);
+									break;
+								case "INFECT":
+									CommandOutput = BioticActions.Infect(this, targetBiotic);
+									break;
+								}
+							}
+							switch(Command) {
+
+							case "RUN_AWAY":
+								CommandOutput = BioticActions.RunAway(this);
+								break;
+							case "REPLICATE":
+								CommandOutput = BioticActions.Replicate(this);
+								break;
+							case "WANDER":
+								CommandOutput = BioticActions.Wander(this);
+								break;
+							case "FOLLOW":
+								CommandOutput = BioticActions.Follow(this);
+								break;
+							}
+							if (CommandOutput == true) {
+								break outerloop;
+							}
+							else {
+								break nextSection;
+							}
+
 						}
 					}
-					switch(Command) {
-
-					case "RUN_AWAY":
-						CommandOutput = BioticActions.RunAway(this);
-						break;
-					case "REPLICATE":
-						CommandOutput = BioticActions.Replicate(this);
-						break;
-					case "WANDER":
-						CommandOutput = BioticActions.Wander(this);
-						break;
-					case "FOLLOW":
-						CommandOutput = BioticActions.Follow(this);
-						break;
-					}
-					if (CommandOutput == true) {
-						break outerloop;
-					}
-
-				}
-			}
 		//If Nothing works, Wander
 		BioticActions.Wander(this);
+
+			}
 	}
 
 

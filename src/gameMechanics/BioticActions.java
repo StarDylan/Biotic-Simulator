@@ -50,7 +50,7 @@ public class BioticActions {
 		int radius_of_placement = 1;
 
 		//Check if Timer is at 0
-		if(targetBiotic.getTimer().getReplicateTimer() == 0) {
+		if(targetBiotic.getTimer().getReplicateTimer() <= 0) {
 			ArrayList<int[]> availableSpaces = 
 					SearchAlgorithm.searchForEmpty(radius_of_placement, targetBiotic);
 			//Chooses a Random Space
@@ -65,7 +65,7 @@ public class BioticActions {
 						targetBiotic.addInformationDeath(500); 
 						targetBiotic.clone(xCord, yCord,targetBiotic.getColor());
 						//.getTimer().addReplicateTimer(targetBiotic.getTimer().getResetValueReplicateTimer());
-						targetBiotic.getTimer().addReplicateTimer(targetBiotic.getTimer().getResetValueReplicateTimer()*9999999);
+						targetBiotic.getTimer().addReplicateTimer(targetBiotic.getTimer().getResetValueReplicateTimer()*150);
 						return true;
 
 					}
@@ -95,7 +95,7 @@ public class BioticActions {
 	public static boolean RunAway (Biotic currentBiotic) {
 
 		//
-		int detectRadius = 20;
+		int detectRadius = 5;
 
 		//Gets HashMap of nearest Biotics
 		HashMap<Biotic, Integer> Found = SearchAlgorithm.search(detectRadius, currentBiotic);
@@ -176,7 +176,7 @@ public class BioticActions {
 
 	public static boolean Follow(Biotic currentBiotic) {
 
-		int detectRadius = 10;
+		int detectRadius = 5;
 
 
 		//Gets HashMap of nearest Biotics
@@ -258,11 +258,20 @@ public class BioticActions {
 
 	public static boolean Hack(Biotic currentBiotic, Biotic targetBiotic) {
 		if (Biotic.getBIOTICS_INGAME().contains(targetBiotic)) {
-			
-			targetBiotic.setProgram(currentBiotic.getProgram());
-			targetBiotic.setColor(currentBiotic.getColor());
+			if(currentBiotic.getTimer().getHackTimer() == 0) {
+				if(currentBiotic.getProgram() != (targetBiotic.getProgram())) {
+					targetBiotic.setProgram(currentBiotic.getProgram());
+					targetBiotic.setColor(currentBiotic.getColor());
+					return true;
+				}
 
-			return true;
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
 		}
 		else {
 			return false;

@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.swing.JComponent;
@@ -26,6 +27,7 @@ public class Board extends JPanel {
 
 	public static int DimentionX = 1000;
 	public static int DimentionY = 1000;
+	public static ArrayList<Biotic> deleteList = new ArrayList<Biotic>();
 
 
 	public static void setScreenSize() {
@@ -61,27 +63,38 @@ public class Board extends JPanel {
 
 		for(int x = 0; x < Biotic.getNum_BIOTICS_INGAME(); x++) {
 			Biotic bio = Biotic.getBIOTICS_INGAME().get(x);
-			for (int y = 0; y < bio.getNetwork().size();y++) {
-				if(bio.getNetwork().get(y).getNetwork().contains(bio)) {
-					int[] cords1 = bio.getNetwork().get(y).getCurrentCords();
-					int[] cords2 = bio.getCurrentCords();
+			if (!(deleteList.contains(bio))) {
+				for (int y = 0; y < bio.getNetwork().size();y++) {
+					if(!deleteList.contains(bio.getNetwork().get(y))){
+						if (bio != null) {
+							if(bio.getNetwork().get(y).getNetwork().contains(bio)) {
+								int[] cords1 = bio.getNetwork().get(y).getCurrentCords();
+								int[] cords2 = bio.getCurrentCords();
 
-					g2d.setColor(Color.MAGENTA);
-					g2d.drawLine(cords1[0]*10+5, cords1[1]*10+5, cords2[0]*10+5, cords2[1]*10+5);
+								g2d.setColor(Color.MAGENTA);
+								g2d.drawLine(cords1[0]*10+5, cords1[1]*10+5, cords2[0]*10+5, cords2[1]*10+5);
+							}
+						}
+					}
 				}
+
+				//Colors
+				g2d.setColor(bio.getColor());
+				g2d.fillRect(bio.getCurrentCords()[0] * 10, bio.getCurrentCords()[1] * 10, 10, 10);
+
+				//Counter
+				if (bio.getColor() == Color.red) {
+					red++;
+				}
+				else {
+					black++;
+				}
+
 			}
 
-			//Colors
-			g2d.setColor(bio.getColor());
 
-			//Counter
-			if (bio.getColor() == Color.red) {
-				red++;
-			}
-			else {
-				black++;
-			}
-			g2d.fillRect(bio.getCurrentCords()[0] * 10, bio.getCurrentCords()[1] * 10, 10, 10);
+
+
 		}
 
 		g2d.setColor(Color.BLACK);

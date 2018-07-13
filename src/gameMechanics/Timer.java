@@ -4,17 +4,19 @@ public class Timer {
 	
 	//Minimum Number of Ticks between Replicates
 	private int ReplicateTimer = 200;
-	private int NetworkTimer = 400;
-	private int DeleteTimer = 0;
+	private int DeleteTimer = 3;
+	private int HackTimer = 4;
+	private Biotic Owner;
 	
 	private int ResetValueReplicateTimer;
-	private int ResetValueNetworkTimer;
 	private int ResetValueDeleteTimer;
+	private int ResetValueHackTimer;
 	
-	Timer(){
+	Timer(Biotic biotic){
 		ResetValueReplicateTimer = ReplicateTimer;
-		ResetValueNetworkTimer = NetworkTimer;
 		ResetValueDeleteTimer = DeleteTimer;
+		ResetValueHackTimer = HackTimer;
+		Owner = biotic;
 	}
 	
 	public int getReplicateTimer() {
@@ -24,8 +26,8 @@ public class Timer {
 		this.ResetValueReplicateTimer += time;
 	}
 	
-	public int getNetworkTimer() {
-		return this.NetworkTimer;
+	public int getHackTimer() {
+		return this.HackTimer;
 	}
 	
 	public int getDeleteTimer() {
@@ -34,22 +36,38 @@ public class Timer {
 	public int getResetValueReplicateTimer() {
 		return ResetValueReplicateTimer;
 	}
+	public void setResetValueReplicateTimer(int newTime) {
+		ResetValueReplicateTimer = newTime;
+	}
 	
 	public void Update() {
-		this.ReplicateTimer -= 1;
-		this.NetworkTimer -= 1;
-		this.DeleteTimer -= 0;
+		//Network Buff; Increases Replicating by 2 fold
+		if (Owner.getNetwork().size() > 3) {
+			this.ReplicateTimer -= 3;
+		}
+		else {
+			this.ReplicateTimer -= 1;
+		}
+		if (Owner.getNetwork().size() > 10) {
+			this.DeleteTimer -= 2;
+			this.HackTimer -= 2;
+		}
+		else {
+			this.DeleteTimer -= 1;
+			this.HackTimer -= 1;
+		}
+
 		
-		if (ReplicateTimer == -1) {
+		if (ReplicateTimer <= -1) {
+			
 			this.ReplicateTimer = ResetValueReplicateTimer;
 		}
 		
-		if (NetworkTimer == -1) {
-			this.NetworkTimer = ResetValueNetworkTimer;
-		}
-		
-		if (DeleteTimer == -1) {
+		if (DeleteTimer <= -1) {
 			this.DeleteTimer = ResetValueDeleteTimer;
+		}
+		if(HackTimer <= -1) {
+			this.HackTimer = this.ResetValueHackTimer;
 		}
 		
 		

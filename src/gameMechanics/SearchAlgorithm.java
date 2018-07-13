@@ -182,6 +182,14 @@ public class SearchAlgorithm {
 		if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
 			near.add("REPLICATE");
 		}
+		//	Near/NextTo SAME_COLOR
+		if(selectedBiotic.getColor() == currentBiotic.getColor()) {
+			near.add("SAME_COLOR");
+		}
+		//	Near/NextTO DIFFERENT_COLOR
+		else{
+			near.add("DIFFERENT_COLOR");
+		}
 		return near;
 
 	}
