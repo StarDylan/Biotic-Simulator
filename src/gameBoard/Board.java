@@ -61,6 +61,7 @@ public class Board extends JPanel {
 		int red = 0;
 		int black = 0;
 
+		//Places line between networked Biotics
 		for(int x = 0; x < Biotic.getNum_BIOTICS_INGAME(); x++) {
 			Biotic bio = Biotic.getBIOTICS_INGAME().get(x);
 			if (!(deleteList.contains(bio))) {

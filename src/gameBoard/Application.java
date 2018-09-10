@@ -7,6 +7,8 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import networkServer.JavaHTTPServer;
+import networkServer.serverThread;
 import org.json.simple.JSONObject;
 
 import gameMechanics.Biotic;
@@ -38,7 +40,7 @@ public class Application extends JPanel {
 
 		
 		
-		JSONObject jsonArray = JsonImport.getJsonObjectFromRaw("{\r\n" + 
+		JSONObject redJson = JsonImport.getJsonObjectFromRaw("{\r\n" +
 				"\"PROGRAM\":\r\n" + 
 				"[\r\n" + 
 				"{\"IF\":[\"DIFFERENT_COLOR\"],\r\n" + 
@@ -47,7 +49,7 @@ public class Application extends JPanel {
 				"{\"IF\":[\"ALWAYS\"],\r\n" + 
 				"\"THAN\":[\"REPLICATE\"]\r\n" + 
 				"},\r\n" + 
-				"{\"IF\":[\"SAME_COLOR\"],\r\n" + 
+				"{\"IF\":[\"ALWAYS\"],\r\n" +
 				"\"THAN\":[\"NETWORK\"]\r\n" + 
 				"},\r\n" + 
 				"{\"IF\":[\"SAME_COLOR\"],\r\n" + 
@@ -62,10 +64,10 @@ public class Application extends JPanel {
 				",\"Location\":[102,102]\r\n" + 
 				"}");
 		
-		JSONObject jsonArray2 = JsonImport.getJsonObjectFromRaw("{\r\n" + 
+		JSONObject blackJson = JsonImport.getJsonObjectFromRaw("{\r\n" +
 				"	\"PROGRAM\": [{\r\n" + 
-				"				\"IF\": [\"DIFFERENT_COLOR\"],\r\n" + 
-				"				\"THAN\": [\"DELETE\"]\r\n" + 
+				"				\"IF\": [\"DIFFERENT_COLOR\"],\r\n" +
+				"				\"THAN\": [\"HACK\"]\r\n" +
 				"			},\r\n" + 
 				"			{\r\n" + 
 				"				\"IF\": [\"ALWAYS\"],\r\n" + 
@@ -73,7 +75,7 @@ public class Application extends JPanel {
 				"			},\r\n" + 
 				"\r\n" + 
 				"			{\r\n" + 
-				"				\"IF\": [\"SAME_COLOR\"],\r\n" + 
+				"				\"IF\": [\"ALWAYS\"],\r\n" +
 				"				\"THAN\": [\"NETWORK\"]\r\n" + 
 				"			},\r\n" + 
 				"\r\n" + 
@@ -85,11 +87,9 @@ public class Application extends JPanel {
 				"\r\n" + 
 				"		]\r\n" + 
 				"\r\n" + 
-				"		,\r\n" + 
-				"	\"Location\": [102, 102]\r\n" + 
+				"		,\r\n" +
 				"}");
-		Biotic cel2 = new Biotic("223e4567-e89b-42d3-a456-556642440000",jsonArray2,190,100,Color.RED);
-		Biotic cel1 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,1,1,Color.black);
+		(new serverThread()).start();
 
 		
 		//Biotic cel3 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,5,0);
@@ -97,7 +97,7 @@ public class Application extends JPanel {
 		while (true) {
 			GameController.UpdateAllBiotics();
 			gc.repaint();
-			Thread.sleep(40);
+			Thread.sleep(40); //40 for 1x Speed
 	    }
 	
 

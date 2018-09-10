@@ -235,7 +235,7 @@ public class Biotic {
 		 */
 
 
-		JSONArray ProgramArray = (JSONArray) Data.get("PROGRAM");
+		JSONArray ProgramArray = (JSONArray) Data.get("program");
 		outerloop:
 			for(int p = 0; p < ProgramArray.size(); p++) {
 				nextSection:
@@ -244,7 +244,7 @@ public class Biotic {
 						JSONObject Program = (JSONObject) ProgramArray.get(p);
 
 						//Get the If Commands
-						JSONArray IfArray = (JSONArray) Program.get("IF");
+						JSONArray IfArray = (JSONArray) Program.get("if");
 						ArrayList<String> IfConditions = new ArrayList<String>();
 
 						//Transfer from JSONArray to ArrayList
@@ -254,7 +254,7 @@ public class Biotic {
 						}
 
 						//Get the THAN Commands
-						JSONArray ThanArray = (JSONArray) Program.get("THAN");
+						JSONArray ThanArray = (JSONArray) Program.get("than");
 
 
 						for(int k = 0; k < IfConditions.size(); k++) {
@@ -273,32 +273,32 @@ public class Biotic {
 							//Requries Close Proximety Commands
 							if (NearBy.contains("NEXT_TO")) {
 								switch(Command) {
-								case "DELETE":
+								case "delete":
 									CommandOutput = BioticActions.Delete(this, targetBiotic);
 									break;
-								case "NETWORK":
+								case "network":
 									CommandOutput = BioticActions.Network(this, targetBiotic);
 									break;
-								case "HACK":
+								case "hack":
 									CommandOutput = BioticActions.Hack(this, targetBiotic);
 									break;
-								case "INFECT":
+								case "infect":
 									CommandOutput = BioticActions.Infect(this, targetBiotic);
 									break;
 								}
 							}
 							switch(Command) {
 
-							case "RUN_AWAY":
+							case "run_away":
 								CommandOutput = BioticActions.RunAway(this);
 								break;
-							case "REPLICATE":
+							case "replicate":
 								CommandOutput = BioticActions.Replicate(this);
 								break;
-							case "WANDER":
+							case "wander":
 								CommandOutput = BioticActions.Wander(this);
 								break;
-							case "FOLLOW":
+							case "follow":
 								CommandOutput = BioticActions.Follow(this);
 								break;
 							}

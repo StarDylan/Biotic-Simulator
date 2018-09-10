@@ -158,37 +158,37 @@ public class SearchAlgorithm {
 		}
 		//	Near/NextTo Young 
 		if (selectedBiotic.getInformation() <= currentBiotic.getInformation()) {
-			near.add("YOUNG");
+			near.add("young");
 		}
 		//	Near/NextTo Old
 		else {
-			near.add("OLD");
+			near.add("old");
 		}
 		//	Near/NextTo Network
 		if(currentBiotic.getNetwork().contains(selectedBiotic)) {
-			near.add("NETWORKED");
+			near.add("networked");
 		}
 		//	Near/NextTo Past Creation
 		if(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) {
-			near.add("PAST_CREATION");
+			near.add("past_creation");
 		}
 		//	Near/NextTo Stranger
 		if (!(currentBiotic.getOwner_UUID().equals(selectedBiotic.getOwner_UUID())) 
 				&& !(currentBiotic.getNetwork().contains(selectedBiotic)
 						&& selectedBiotic.getNetwork().contains(currentBiotic))) {
-			near.add("STRANGER");
+			near.add("stranger");
 		}
 		//	Near/NextTo Replicate
 		if (currentBiotic.getBioticUUID().equals(selectedBiotic.getBioticUUID())) {
-			near.add("REPLICATE");
+			near.add("replicate");
 		}
 		//	Near/NextTo SAME_COLOR
 		if(selectedBiotic.getColor() == currentBiotic.getColor()) {
-			near.add("SAME_COLOR");
+			near.add("same_color");
 		}
 		//	Near/NextTO DIFFERENT_COLOR
 		else{
-			near.add("DIFFERENT_COLOR");
+			near.add("different_color");
 		}
 		return near;
 
