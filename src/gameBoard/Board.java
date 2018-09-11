@@ -9,6 +9,12 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -34,6 +40,18 @@ public class Board extends JPanel {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		DimentionX = (int) screenSize.getWidth();
 		DimentionY = (int) screenSize.getHeight();
+		Path path = Paths.get("D:\\Files\\Programming\\Java\\Biotic-Simulator\\src\\networkServer\\size.html");
+        Path old_path = Paths.get("D:\\Files\\Programming\\Java\\Biotic-Simulator\\src\\networkServer\\backup_size.html");
+		Charset charset = StandardCharsets.UTF_8;
+
+		try {
+			String content = new String(Files.readAllBytes(old_path), charset);
+			content = content.replaceAll("DATA", DimentionX + ", " + DimentionY);
+
+			Files.write(path, content.getBytes(charset));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 

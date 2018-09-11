@@ -1,7 +1,6 @@
 package networkServer;
 
 import gameMechanics.JsonImport;
-import org.json.simple.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -25,6 +24,7 @@ public class JavaHTTPServer implements Runnable{
     static final File WEB_ROOT = new File("D:\\Files\\Programming\\Java\\Biotic-Simulator\\src\\networkServer");
     static final String DEFAULT_FILE = "index.html";
     static final String FILE_NOT_FOUND = "404.html";
+    static final String SIZE = "size.html";
     static final String METHOD_NOT_SUPPORTED = "not_supported.html";
     // port to listen connection
     static final int PORT = 8080;
@@ -113,8 +113,15 @@ public class JavaHTTPServer implements Runnable{
 
             } else {
                 // GET or HEAD method
-                String result = java.net.URLDecoder.decode(fileRequested, "UTF-8");
-                bioticCreate.addBiotic(connect.getInetAddress().toString(), JsonImport.getJsonObjectFromRaw(result.substring(1)));
+                if (!(fileRequested.equals("/data"))) {
+
+
+                    String result = java.net.URLDecoder.decode(fileRequested, "UTF-8");
+                    bioticCreate.addBiotic(connect.getInetAddress().toString(), JsonImport.getJsonObjectFromRaw(result.substring(1)));
+                }
+                else{
+                    dataSendHTML(out, dataOut, fileRequested);
+                }
                 if (fileRequested.endsWith("/")) {
                     fileRequested += DEFAULT_FILE;
                 }
@@ -147,7 +154,12 @@ public class JavaHTTPServer implements Runnable{
 
         } catch (FileNotFoundException fnfe) {
             try {
-                fileNotFound(out, dataOut, fileRequested);
+                if (!fileRequested.equals("/data")) {
+                    fileNotFound(out, dataOut, fileRequested);
+                }
+                else{
+                    dataSendHTML(out,dataOut, fileRequested);
+                }
             } catch (IOException ioe) {
                 System.err.println("Error with file not found exception : " + ioe.getMessage());
             }
@@ -216,6 +228,27 @@ public class JavaHTTPServer implements Runnable{
 
         if (verbose) {
             System.out.println("File " + fileRequested + " not found");
+        }
+    }
+    private void dataSendHTML(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
+        File file = new File(WEB_ROOT, SIZE);
+        int fileLength = (int) file.length();
+        String content = "text/html";
+        byte[] fileData = readFileData(file, fileLength);
+
+        out.println("HTTP/1.1 404 File Not Found");
+        out.println("Server: Java HTTP Server from SSaurel : 1.0");
+        out.println("Date: " + new Date());
+        out.println("Content-type: " + content);
+        out.println("Content-length: " + fileLength);
+        out.println(); // blank line between headers and content, very important !
+        out.flush(); // flush character output stream buffer
+
+        dataOut.write(fileData, 0, fileLength);
+        dataOut.flush();
+
+        if (verbose) {
+            System.out.println("Sent Data HTML");
         }
     }
 
