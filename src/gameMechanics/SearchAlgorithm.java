@@ -151,10 +151,10 @@ public class SearchAlgorithm {
 		ArrayList<String> near = new ArrayList<String>();
 
 		if (radiusFoundIn <= 2) {
-			near.add("NEXT_TO");
+			near.add("next_to");
 		}
 		else {
-			near.add("NEAR_BY");
+			near.add("near_by");
 		}
 		//	Near/NextTo Young 
 		if (selectedBiotic.getInformation() <= currentBiotic.getInformation()) {

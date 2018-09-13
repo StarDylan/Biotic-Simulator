@@ -90,7 +90,7 @@ public class Board extends JPanel {
 								int[] cords1 = bio.getNetwork().get(y).getCurrentCords();
 								int[] cords2 = bio.getCurrentCords();
 
-								g2d.setColor(Color.MAGENTA);
+								g2d.setColor(Color.LIGHT_GRAY);
 								g2d.drawLine(cords1[0]*10+5, cords1[1]*10+5, cords2[0]*10+5, cords2[1]*10+5);
 							}
 						}
@@ -99,6 +99,8 @@ public class Board extends JPanel {
 
 				//Colors
 				g2d.setColor(bio.getColor());
+
+				//Draw Individual Biotics
 				g2d.fillRect(bio.getCurrentCords()[0] * 10, bio.getCurrentCords()[1] * 10, 10, 10);
 
 				//Counter

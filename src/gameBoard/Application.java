@@ -41,22 +41,22 @@ public class Application extends JPanel {
 		
 		
 		JSONObject redJson = JsonImport.getJsonObjectFromRaw("{\r\n" +
-				"\"PROGRAM\":\r\n" + 
+				"\"program\":\r\n" +
 				"[\r\n" + 
-				"{\"IF\":[\"DIFFERENT_COLOR\"],\r\n" + 
-				"\"THAN\":[\"HACK\"]\r\n" + 
+				"{\"if\":[\"always\"],\r\n" +
+				"\"than\":[\"replicate\"]\r\n" +
 				"},\r\n" + 
-				"{\"IF\":[\"ALWAYS\"],\r\n" + 
-				"\"THAN\":[\"REPLICATE\"]\r\n" + 
+				"{\"if\":[\"different_color\"],\r\n" +
+				"\"than\":[\"hack\"]\r\n" +
 				"},\r\n" + 
-				"{\"IF\":[\"ALWAYS\"],\r\n" +
-				"\"THAN\":[\"NETWORK\"]\r\n" + 
+				"{\"if\":[\"same_colorX																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																az\"],\r\n" +
+				"\"than\":[\"network\"]\r\n" +
+				"},\r\n" +
+				"{\"if\":[\"same_color\"],\r\n" +
+				"\"than\":[\"follow\"]\r\n" +
 				"},\r\n" + 
-				"{\"IF\":[\"SAME_COLOR\"],\r\n" + 
-				"\"THAN\":[\"FOLLOW\"]\r\n" + 
-				"},\r\n" + 
-				"{\"IF\":[\"ALWAYS\"],\r\n" + 
-				"\"THAN\":[\"RUN_AWAY\"]\r\n" + 
+				"{\"if\":[\"always\"],\r\n" +
+				"\"than\":[\"run_away\"]\r\n" +
 				"},\r\n" + 
 				"\r\n" + 
 				"]\r\n" + 
@@ -65,23 +65,23 @@ public class Application extends JPanel {
 				"}");
 		
 		JSONObject blackJson = JsonImport.getJsonObjectFromRaw("{\r\n" +
-				"	\"PROGRAM\": [{\r\n" + 
-				"				\"IF\": [\"DIFFERENT_COLOR\"],\r\n" +
-				"				\"THAN\": [\"HACK\"]\r\n" +
+				"	\"program\": [{\r\n" +
+				"				\"if\": [\"different_color\"],\r\n" +
+				"				\"than\": [\"hack\"]\r\n" +
 				"			},\r\n" + 
 				"			{\r\n" + 
-				"				\"IF\": [\"ALWAYS\"],\r\n" + 
-				"				\"THAN\": [\"REPLICATE\"]\r\n" + 
-				"			},\r\n" + 
-				"\r\n" + 
-				"			{\r\n" + 
-				"				\"IF\": [\"ALWAYS\"],\r\n" +
-				"				\"THAN\": [\"NETWORK\"]\r\n" + 
+				"				\"if\": [\"always\"],\r\n" +
+				"				\"than\": [\"replicate\"]\r\n" +
 				"			},\r\n" + 
 				"\r\n" + 
 				"			{\r\n" + 
-				"				\"IF\": [\"DIFFERENT_COLOR\"],\r\n" + 
-				"				\"THAN\": [\"FOLLOW\"]\r\n" + 
+				"				\"if\": [\"always\"],\r\n" +
+				"				\"than\": [\"network\"]\r\n" +
+				"			},\r\n" + 
+				"\r\n" + 
+				"			{\r\n" + 
+				"				\"if\": [\"different_color\"],\r\n" +
+				"				\"than\": [\"follow\"]\r\n" +
 				"			}\r\n" + 
 				"\r\n" + 
 				"\r\n" + 
@@ -92,12 +92,12 @@ public class Application extends JPanel {
 		(new serverThread()).start();
 
 		
-		//Biotic cel3 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,5,0);
-		//Biotic cel4 = new Biotic("123e4567-e89b-42d3-a456-556642440000",jsonArray,1,0);
+		Biotic cel3 = new Biotic("123e4567-e89b-42d3-a456-556642440000",blackJson,5,0,Color.black);
+		new Biotic("123e4567-e89b-42d3-a456-556642440000",redJson,100,80,Color.red);
 		while (true) {
 			GameController.UpdateAllBiotics();
 			gc.repaint();
-			Thread.sleep(40); //40 for 1x Speed
+			Thread.sleep(3); //40 for 1x Speed
 	    }
 	
 

@@ -228,7 +228,7 @@ public class Biotic {
 		else {
 			NearBy = new ArrayList<String>();
 		}
-		NearBy.add("ALWAYS");
+		NearBy.add("always");
 		/**
 		 * JSON Syntax
 		 * {"WHEN":["DETECT_RED","DETECT BLUE"],"THAN":["EAT"]},"IF":["DETECT BLUE"],"THAN":["RUN_AWAY"]}
@@ -271,7 +271,7 @@ public class Biotic {
 							//If True, Set Next Action to Programmed action 
 							boolean CommandOutput = false;
 							//Requries Close Proximety Commands
-							if (NearBy.contains("NEXT_TO")) {
+							if (NearBy.contains("next_to")) {
 								switch(Command) {
 								case "delete":
 									CommandOutput = BioticActions.Delete(this, targetBiotic);
